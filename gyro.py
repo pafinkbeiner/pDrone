@@ -5,6 +5,12 @@
 # sudo apt-get install i2c-tools python-smbus
 # sudo i2cdetect -y 1
 
+# Pinbelegung
+# Pin 1 (3.3V)	VCC
+# Pin 3 (SDA)	SDA
+# Pin 5 (SCL)	SCL
+# Pin 6 (GND)	GND
+
 import smbus
 import math
 import time
