@@ -1,9 +1,9 @@
 # pip install python-socketio
-
+# pip install pymitter
 
 # import local files
 # import calibrate
-# import gyro
+import gyro
 # import distance
 
 # import libraries
@@ -77,7 +77,7 @@ def stabilisation(x, y, z, prev = motor):
     print("Stabilisation..")
     return {'vl': 1520,'vr': 1600,'hl': 1550, 'hr': 1570}
 
-##################### MAIN #######################
+############################ MAIN ##############################
 
 print("Starting control software...")
 print("Available number of processors: ", mp.cpu_count())
@@ -100,9 +100,9 @@ else:
 
 while True:
     # get gyro information
-    gyro = { 'x': 0, 'y': 0, 'z': 0 }
+    gyrod = gyro.get_scaled_x_y_z_out()
     # get new stabilasation values
-    new = stabilisation(gyro['x'], gyro['y'], gyro['z'])
+    new = stabilisation(gyrod['x'], gyrod['y'], gyrod['z'])
     # set new values
     setMotorState(new)
 
