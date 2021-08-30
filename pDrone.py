@@ -99,10 +99,17 @@ else:
     sys.exit()
 
 while True:
-    # get gyro information
+    # get gyro base information -> data & acc
     gyrod = gyro.get_scaled_x_y_z_out()
+    gyroacc = gyro.get_scaled_acc_x_y_z_out()
+    
+    # get gyro rotation information
+    rotx = gyro.get_x_rotation(gyroacc['x'],gyroacc['y'],gyroacc['z'])
+    roty = gyro.get_y_rotation(gyroacc['x'],gyroacc['y'],gyroacc['z'])
+
     # get new stabilasation values
     new = stabilisation(gyrod['x'], gyrod['y'], gyrod['z'])
+
     # set new values
     setMotorState(new)
 
