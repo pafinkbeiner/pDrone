@@ -30,10 +30,10 @@ sio.attach(app)
 
 # global motor variables
 motor = {
-    'vl': 0,
-    'vr': 0,
-    'hl': 0,
-    'hr': 0
+    'vl': 1510,
+    'vr': 1510,
+    'hl': 1510,
+    'hr': 1510
 }
 
 # setter class for motor
