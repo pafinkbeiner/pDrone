@@ -84,7 +84,14 @@ print("Available number of processors: ", mp.cpu_count())
 
 print("Initialize gyro...")
 # check correctness of gyro sensor
-if(True):
+check1 = type(gyro.get_scaled_x_out()) == int or float
+check2 = type(gyro.get_scaled_y_out()) == int or float
+check3 = type(gyro.get_scaled_z_out()) == int or float
+check4 = type(gyro.get_scaled_acc_x_out()) == int or float
+check5 = type(gyro.get_scaled_acc_y_out()) == int or float
+check6 = type(gyro.get_scaled_acc_z_out()) == int or float
+
+if check1 and check2 and check3 and check4 and check5 and check6:
     print("gyro working...")
 else:
     print("gyro not working shutting down...")
@@ -102,7 +109,7 @@ while True:
     # get gyro base information -> data & acc
     gyrod = gyro.get_scaled_x_y_z_out()
     gyroacc = gyro.get_scaled_acc_x_y_z_out()
-    
+
     # get gyro rotation information
     rotx = gyro.get_x_rotation(gyroacc['x'],gyroacc['y'],gyroacc['z'])
     roty = gyro.get_y_rotation(gyroacc['x'],gyroacc['y'],gyroacc['z'])
