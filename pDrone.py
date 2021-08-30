@@ -22,7 +22,7 @@ import asyncio
 import json
 
 # create a Socket.IO server
-sio = socketio.AsyncServer()
+sio = socketio.AsyncServer(cors_allowed_origins="*")
 app = web.Application()
 sio.attach(app)
 
