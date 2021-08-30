@@ -1,42 +1,26 @@
 # pip install python-socketio
-# pip install pymitter
 
 # import local files
-import control
-import gyro
+# import control
+# import gyro
 # import distance
+
+#import test files debug
+from test import gyro_test as gyro
+from test import control_test as control
 
 # import libraries
 import multiprocessing as mp
-from pymitter import EventEmitter
 import sys
 import socketio
 import time
+from aiohttp import web
+import threading
 
 # create a Socket.IO server
-sio = socketio.Server()
-app = socketio.WSGIApp(sio)
-
-# create event emitter
-emitter = EventEmitter()
-
-##################### COMMAND #####################
-
-# global command variables
-command = {
-    'vl': 0,
-    'vr': 0,
-    'hl': 0,
-    'hr': 0    
-}
-
-# custom control event
-@sio.on('command')
-def another_event(sid, data):
-    print("Custom command event triggered")
-    print(sid)
-    print(data)
-    pass
+sio = socketio.AsyncServer()
+app = web.Application()
+sio.attach(app)
 
 ##################### MOTOR ########################
 
@@ -51,37 +35,58 @@ motor = {
 # setter class for motor
 def setMotorState(newState):
     motor.update(newState)
-    emitter.emit("motorStateChanged")
     print("Updated motor values: ", motor)
 
-# motor state changed listener
-@emitter.on("motorStateChanged")
-def motorStateChangedHandler(arg):
-    print("handler1 called with", arg)
+##################### COMMAND #####################
+
+# global command variables
+command = {
+    'vl': 0,
+    'vr': 0,
+    'hl': 0,
+    'hr': 0    
+}
+
+# custom control event
+@sio.on('command')
+async def another_event(sid, data):
+    print("Custom command event triggered")
+    print(sid)
+    print(data)
+    # update motor
+    # setMotorState({
+    #     'vl': motor['vl'] + data['vl'],
+    #     'vr': motor['vr'] + data['vr'],
+    #     'hl': motor['hl'] + data['hl'],
+    #     'hr': motor['hr'] + data['hr']    
+    # })
+    # send back new motor state
+    # sio.emit('motor', data=motor)
+    pass
 
 ######################## MQTT BASIC ###########################
 
 # basic socket io connection event
 @sio.event
-def connect(sid, environ, auth):
+def connect(sid, environ):
     print('connect ', sid)
-    if sid == None:
-        raise ConnectionRefusedError('authentication failed')
-    else: 
-        sio.emit('eventid', data = { 'connection': "successful" })
+    # if sid == None:
+    #     raise ConnectionRefusedError('authentication failed')
+    # else: 
+    #     sio.emit('eventid', data = { 'connection': "successful" })
 
 # basic socket io disconnect event
 @sio.event
 def disconnect(sid):
-    print('disconnect ', sid)
+    print('disconnect ', sid)  
 
 ######################## STABILIZATION ###########################
 
 # stablilisation method gets gyro data and returns new motor speed
 def stabilisation(x, y, z, prev = motor):
-    """function(x,y,z) -> dict({'vl','vr','hl', 'hr'})"""
+    """function(x,y,z,prev?) -> dict[str, Any]"""
     print("Stabilisation..")
-    return {'vl': 1520,'vr': 1600,'hl': 1550, 'hr': 1570}
+    return {'vl': prev['vl'],'vr': prev['vr'],'hl': prev['hl'], 'hr': prev['hr']}
 
 ############################ MAIN ##############################
 
@@ -103,9 +108,7 @@ else:
     print("gyro not working shutting down...")
     sys.exit()
 
-print("Initialize motor...")
-# check correctness of motors
-
+# check correctness of servo motors
 print("Calibrate motor...")
 check7 = control.calibrate()
 
@@ -118,6 +121,17 @@ else:
     print("motor not working shutting down...")
     sys.exit()
 
+# starting mqtt server
+print("Starting mqtt Server...")
+try: 
+    # todo start mqtt server on another thread
+    web.run_app(app)
+    # t = threading.Thread(target=handler)
+    # t.start()
+except:
+    print("Could not connect! Exit application...")
+    sys.exit()  
+
 while True:
     # get gyro base information -> data & acc
     gyrod = gyro.get_scaled_x_y_z_out()
@@ -128,15 +142,7 @@ while True:
     roty = gyro.get_y_rotation(gyroacc['x'],gyroacc['y'],gyroacc['z'])
 
     # get new stabilasation values
-    stabRes = stabilisation(gyrod['x'], gyrod['y'], gyrod['z'])
-
-    # modify values with command
-    # new = {
-    # 'vl': (stabRes['vl'] + command['vl']),
-    # 'vr': (stabRes['vr'] + command['vr']),
-    # 'hl': (stabRes['hl'] + command['hl']),
-    # 'hr': (stabRes['hr'] + command['hr'])
-    # }
+    stabRes = stabilisation(gyrod['x'], gyrod['y'], gyrod['z'], prev=motor)
 
     # set new values
     setMotorState(stabRes)
