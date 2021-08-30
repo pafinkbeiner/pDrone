@@ -2,7 +2,7 @@
 # pip install pymitter
 
 # import local files
-# import calibrate
+import control
 import gyro
 # import distance
 
@@ -20,8 +20,10 @@ app = socketio.WSGIApp(sio)
 # create event emitter
 emitter = EventEmitter()
 
-# global control variables
-control = {
+##################### COMMAND #####################
+
+# global command variables
+command = {
     'vl': 0,
     'vr': 0,
     'hl': 0,
@@ -29,12 +31,14 @@ control = {
 }
 
 # custom control event
-@sio.on('control')
+@sio.on('command')
 def another_event(sid, data):
-    print("Custom control event triggered")
+    print("Custom command event triggered")
     print(sid)
     print(data)
     pass
+
+##################### MOTOR ########################
 
 # global motor variables
 motor = {
@@ -48,14 +52,14 @@ motor = {
 def setMotorState(newState):
     motor.update(newState)
     emitter.emit("motorStateChanged")
-    print("Updated motor values: ")
-    print(motor)
+    print("Updated motor values: ", motor)
 
 # motor state changed listener
 @emitter.on("motorStateChanged")
 def motorStateChangedHandler(arg):
     print("handler1 called with", arg)
 
+######################## MQTT BASIC ###########################
 
 # basic socket io connection event
 @sio.event
@@ -64,12 +68,14 @@ def connect(sid, environ, auth):
     if sid == None:
         raise ConnectionRefusedError('authentication failed')
     else: 
-        sio.emit('eventid', {'data': 'Testdata'})
+        sio.emit('eventid', data = { 'connection': "successful" })
 
 # basic socket io disconnect event
 @sio.event
 def disconnect(sid):
     print('disconnect ', sid)
+
+######################## STABILIZATION ###########################
 
 # stablilisation method gets gyro data and returns new motor speed
 def stabilisation(x, y, z, prev = motor):
@@ -99,7 +105,14 @@ else:
 
 print("Initialize motor...")
 # check correctness of motors
-if(True):
+
+print("Calibrate motor...")
+check7 = control.calibrate()
+
+print("Arming motor...")
+check8 = control.arm()
+
+if check7 and check8:
     print("motor working...")
 else:
     print("motor not working shutting down...")
@@ -115,10 +128,18 @@ while True:
     roty = gyro.get_y_rotation(gyroacc['x'],gyroacc['y'],gyroacc['z'])
 
     # get new stabilasation values
-    new = stabilisation(gyrod['x'], gyrod['y'], gyrod['z'])
+    stabRes = stabilisation(gyrod['x'], gyrod['y'], gyrod['z'])
+
+    # modify values with command
+    # new = {
+    # 'vl': (stabRes['vl'] + command['vl']),
+    # 'vr': (stabRes['vr'] + command['vr']),
+    # 'hl': (stabRes['hl'] + command['hl']),
+    # 'hr': (stabRes['hr'] + command['hr'])
+    # }
 
     # set new values
-    setMotorState(new)
+    setMotorState(stabRes)
 
     # debug
     time.sleep(2)
