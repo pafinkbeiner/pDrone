@@ -26,6 +26,9 @@ except:
 
 print("Connection successful!")
 
+# command name: command
+# data format: {"vl":5, "vr": 7, "hl": 3, "hr": 8}
+
 while True:
     eventname = input("Eventname: ")
     data = input("Data: ")

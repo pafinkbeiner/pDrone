@@ -26,11 +26,11 @@ def calibrate():
     print("Disconnect the battery and press Enter")
     inp = input()
     if inp == '':
-        time.sleep(1)
+        time.sleep(0.3)
         print("Connect the battery NOW.. you will here two beeps, then wait for a gradual falling tone then press Enter")
         inp = input()
         if inp == '':
-            time.sleep(1)
+            time.sleep(0.3)
             return True
 
 
@@ -38,7 +38,7 @@ def arm():
     print("Connect the battery and press Enter")
     inp=input()
     if inp == '':
-        time.sleep(1)
+        time.sleep(0.3)
         return True
 
 def stop(): 
