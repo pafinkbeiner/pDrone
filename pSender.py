@@ -8,10 +8,18 @@ sio = socketio.Client()
 def connect():
     print('connection established')
 
-@sio.event
-def my_message(data):
-    print('message received with ', data)
-    sio.emit('my response', {'response': 'my response'})
+@sio.on('motor')
+def flight_data_handler(data):
+    print("got something")
+    print(data)
+
+@sio.on('my message')
+def on_message(data):
+    print('I received a message!')
+
+@sio.on('message')
+def message(data):
+    print('send worked got message!')
 
 @sio.event
 def disconnect():
@@ -19,7 +27,7 @@ def disconnect():
 
 try: 
     print("Try to connect to socket.io server...")
-    sio.connect('http://10.0.0.170:8080')
+    sio.connect('http://localhost:8080')
 except:
     print("Could not connect! Exit application...")
     sys.exit()    

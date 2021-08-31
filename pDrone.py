@@ -13,6 +13,7 @@ from test import gyro_test as gyro
 from test import control_test as control
 
 # import libraries
+import concurrent.futures
 import multiprocessing as mp
 import sys
 import socketio
@@ -23,7 +24,7 @@ import asyncio
 import json
 
 # create a Socket.IO server
-sio = socketio.AsyncServer(cors_allowed_origins="*")
+sio = socketio.AsyncServer(cors_allowed_origins="*", async_mode='aiohttp', async_handlers=True)
 app = web.Application()
 sio.attach(app)
 
@@ -41,6 +42,8 @@ motor = {
 def setMotorState(newState):
     motor.update(newState)
     print("Updated motor values: ", motor)
+    # sio.send(json.dumps(motor))
+
 
 ##################### COMMAND #####################
 
@@ -52,21 +55,11 @@ command = {
     'hr': 0    
 }
 
-# custom control event
-@sio.on('command')
-async def onCommandHandler(sid, data):
-    print(sid)
-    parsedData = json.loads(data)
-    # update motor
-    setMotorState({
-        'vl': motor['vl'] + parsedData['vl'],
-        'vr': motor['vr'] + parsedData['vr'],
-        'hl': motor['hl'] + parsedData['hl'],
-        'hr': motor['hr'] + parsedData['hr']    
-    })
-    # send back new motor state
-    # sio.emit('motor', data=motor)
-    pass
+######################## Application Data ########################
+
+application = {
+    'onFlight': False
+}
 
 ######################## MQTT BASIC ###########################
 
@@ -94,10 +87,15 @@ def stabilisation(x, y, z, prev = motor):
 
 ############################ MAIN ##############################
 
-
-def main():
-    print("Starting control software...")
+def init():
     print("Available number of processors: ", mp.cpu_count())
+
+    print("Starting Access Point")
+    # start wifi
+    # wifi.access_point.start()
+
+    #stop
+    #access_point.stop()
 
     print("Initialize gyro...")
     # check correctness of gyro sensor
@@ -109,46 +107,62 @@ def main():
     check6 = type(gyro.get_scaled_acc_z_out()) == int or float
 
     if check1 and check2 and check3 and check4 and check5 and check6:
-        print("gyro working...")
+        return True
     else:
-        print("gyro not working shutting down...")
-        sys.exit()
+        return False
 
-    # check correctness of servo motors
-    print("Calibrate motor...")
-    check7 = control.calibrate()
-
+def arm():
     print("Arming motor...")
     check8 = control.arm()
+    return check8
 
-    if check7 and check8:
-        print("motor working...")
-    else:
-        print("motor not working shutting down...")
-        sys.exit()
+def calibrate():
+    print("Calibrate motor...")
+    check7 = control.calibrate()
+    return check7
 
-    # starting mqtt server
-    print("Starting mqtt Server...")
+def flight():
 
     while True:
-        # get gyro base information -> data & acc
-        gyrod = gyro.get_scaled_x_y_z_out()
-        gyroacc = gyro.get_scaled_acc_x_y_z_out()
 
-        # get gyro rotation information
-        rotx = gyro.get_x_rotation(gyroacc['x'],gyroacc['y'],gyroacc['z'])
-        roty = gyro.get_y_rotation(gyroacc['x'],gyroacc['y'],gyroacc['z'])
+        # stops current thread
+        if application['onFlight'] == True:
 
-        # get new stabilasation values
-        stabRes = stabilisation(gyrod['x'], gyrod['y'], gyrod['z'], prev=motor)
+            last_time = round(time.time() * 1000)
 
-        # set new values
-        setMotorState(stabRes)
+            # get gyro base information -> data & acc
+            gyrod = gyro.get_scaled_x_y_z_out()
+            gyroacc = gyro.get_scaled_acc_x_y_z_out()
+
+            # get gyro rotation information
+            rotx = gyro.get_x_rotation(gyroacc['x'],gyroacc['y'],gyroacc['z'])
+            roty = gyro.get_y_rotation(gyroacc['x'],gyroacc['y'],gyroacc['z'])
+
+            # get new stabilasation values
+            stabRes = stabilisation(gyrod['x'], gyrod['y'], gyrod['z'], prev=motor)
+
+            # refresh motor state with control values and stabilist values
+            setMotorState({
+                'vl': stabRes['vl'] + command['vl'],
+                'vr': stabRes['vr'] + command['vr'],
+                'hl': stabRes['hl'] + command['hl'],
+                'hr': stabRes['hr'] + command['hr']    
+            })
+
+            # set back control state after changing
+            command.update({
+                'vl': 0,
+                'vr': 0,
+                'hl': 0,
+                'hr': 0 
+            })
+
+            print("Took: "+str(round(time.time() * 1000) - last_time)+"ms")
 
         # debug
         time.sleep(2)
 
-def startMqttServer(mqttServer):
+def startMqttServer(mqttServer = app):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     loop.run_until_complete(web.run_app(mqttServer))
@@ -156,24 +170,88 @@ def startMqttServer(mqttServer):
 
 ################################## EXEC #####################################
 
-# start wifi
-wifi.access_point.start()
 
-#stop
-#access_point.stop()
-
+# Threading
 # add main loop to thread pool
-t1 = threading.Thread(target=main, name="Thread-1")
-
+t1 = threading.Thread(target=flight, name="Thread-1")
 # add mqtt server thread to thread pool
 t2 = threading.Thread(target=startMqttServer, args=(app,), name="Thread-2")
 
 t2.start()
 
-# starting second thread later
-time.sleep(3)
 
-t1.start()
+# Thread Pool
+# executer = concurrent.futures.ThreadPoolExecutor(max_workers=2)
+
+# b = executer.submit(startMqttServer)
+
+# a = executer.submit(flight)
+
+################################### MQTT ##########################################
+
+# init mqtt event
+@sio.on('init')
+async def onInitHandler(sid, data):
+    init()
+    pass
+
+# init mqtt event
+@sio.on('arm')
+async def onArmHandler(sid, data):
+    arm()
+    pass
+
+# init mqtt event
+@sio.on('calibrate')
+async def onCalibrateHandler(sid, data):
+    calibrate()
+    pass
+
+# custom control event
+@sio.on('command')
+async def onCommandHandler(sid, data):
+    print(sid)
+    parsedData = json.loads(data)
+    # update motor
+    command.update({
+        'vl': parsedData['vl'],
+        'vr': parsedData['vr'],
+        'hl': parsedData['hl'],
+        'hr': parsedData['hr']
+    })
+    # send back new motor state
+    await sio.emit("motor", json.loads(motor))
+    pass
+
+# start flight loop
+@sio.on('flight')
+async def onFlighHandler(sid, data):
+    data = json.loads(data)
+    if data['flight'] == "1":
+        # set motor to default before starting
+        motor.update({
+            'vl': 1510,
+            'vr': 1510,
+            'hl': 1510,
+            'hr': 1510
+        })
+        # start thread - if not already
+        if t1.is_alive() == False:
+            application['onFlight'] = True
+            t1.start()
+        else:
+            application['onFlight'] = True
+    else:
+        # stop flight thread
+        application['onFlight'] = False
+
+# get motor information
+@sio.on('motor')
+async def onMotorHandler(sid, data):
+    await sio.emit("motor", json.dumps(motor))
+    pass
+
+
 
 
 
