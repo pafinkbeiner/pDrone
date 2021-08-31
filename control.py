@@ -6,10 +6,10 @@ os.system("sudo pigpiod")  # Launching GPIO library
 time.sleep(1)
 
 motor = {
-    'vl': 4,
-    'vr': 11,
-    'hl': 10,
-    'hr': 16
+    'vl': 13,
+    'vr': 18,
+    'hl': 19,
+    'hr': 12
 }
 
 pi = pigpio.pi()

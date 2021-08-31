@@ -23,7 +23,7 @@ import asyncio
 import json
 
 # create a Socket.IO server
-sio = socketio.AsyncServer()
+sio = socketio.AsyncServer(cors_allowed_origins="*")
 app = web.Application()
 sio.attach(app)
 
@@ -168,9 +168,13 @@ t1 = threading.Thread(target=main, name="Thread-1")
 # add mqtt server thread to thread pool
 t2 = threading.Thread(target=startMqttServer, args=(app,), name="Thread-2")
 
+t2.start()
+
+# starting second thread later
+time.sleep(3)
 
 t1.start()
-t2.start()
+
 
 
 
