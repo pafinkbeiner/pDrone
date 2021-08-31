@@ -6,6 +6,7 @@
 # import control
 # import gyro
 # import distance
+import wifi
 
 #import test files debug
 from test import gyro_test as gyro
@@ -155,11 +156,18 @@ def startMqttServer(mqttServer):
 
 ################################## EXEC #####################################
 
+# start wifi
+wifi.access_point.start()
+
+#stop
+#access_point.stop()
+
 # add main loop to thread pool
 t1 = threading.Thread(target=main, name="Thread-1")
 
 # add mqtt server thread to thread pool
 t2 = threading.Thread(target=startMqttServer, args=(app,), name="Thread-2")
+
 
 t1.start()
 t2.start()
