@@ -27,7 +27,7 @@ def disconnect():
 
 try: 
     print("Try to connect to socket.io server...")
-    sio.connect('http://localhost:8080')
+    sio.connect('http://10.0.0.170:8080')
 except:
     print("Could not connect! Exit application...")
     sys.exit()    
