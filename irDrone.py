@@ -178,12 +178,15 @@ def flight():
 
 
 def startIRListener():
-    print("Listening on IR Commands: ")
-    out = lirc.nextcode()
-    cmd = out[0]
-    command = "test"
 
     while True:
+
+        print("Listening on IR Commands: ")
+        out = lirc.nextcode()
+        cmd = out[0]
+        print(cmd)
+        command = "test"
+
         # GET OPERATIONAL COMMAND
         if command == "init":
             init()
