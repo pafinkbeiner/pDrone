@@ -175,9 +175,11 @@ def startMqttServer(mqttServer = app):
 # add main loop to thread pool
 t1 = threading.Thread(target=flight, name="Thread-1")
 # add mqtt server thread to thread pool
-t2 = threading.Thread(target=startMqttServer, args=(app,), name="Thread-2")
+# t2 = threading.Thread(target=startMqttServer, args=(app,), name="Thread-2")
 
-t2.start()
+t1.start()
+
+# start mqtt server
 
 
 # Thread Pool
