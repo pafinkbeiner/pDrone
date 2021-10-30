@@ -1,5 +1,8 @@
 const { Server } = require("socket.io");
 
+const dotenv = require("dotenv")
+dotenv.config();
+
 console.log("Firmware starting in "+process.env.ENV);
 
 const update_telemetry = process.env.ENV == "production" ? require("./gyro") : require("./test/gyro.test");
