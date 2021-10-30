@@ -8,5 +8,9 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "mpu6050": "^0.1.4",
+    "rpio": "^2.4.2"
+  }
 }
