@@ -1,9 +1,9 @@
 const { Server } = require("socket.io");
-const MPU6050 = require("./gyro");
+const update_telemetry = require("./gyro");
 
 const io = new Server(3000);
 
-const gyro = new MPU6050();
+const gyro = new MPU6050("");
 gyro.getValue();
 
 const application = {

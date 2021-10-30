@@ -45,3 +45,5 @@ class PWM {
     }
 
 }
+
+module.exports = PWM;

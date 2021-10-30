@@ -1,15 +1,26 @@
-const mpu = require("mpu6050");
-
-export class MPU6050{
-   
-    constructor(i2cBus){
-        this.i2cBus = i2cBus;
-        this.mpu = new mpu(i2cBus);
-        this.mpu.initialize();
-    }
-
-    getGyro(){
-        return this.mpu.getMotion6();
+var gyro = require("mpu6050-gyro");
+ 
+var address = 0x68; //MPU6050 address
+var bus = 1; //i2c bus used
+ 
+var gyro = new gyro( bus,address );
+ 
+async function update_telemetry() {
+    
+    var gyro_xyz = gyro.get_gyro_xyz();
+    var accel_xyz = gyro.get_accel_xyz();
+    
+    var gyro_data = {
+        gyro_xyz: gyro_xyz,
+        accel_xyz: accel_xyz,
+        rollpitch: gyro.get_roll_pitch( gyro_xyz, accel_xyz )
     }
     
+    console.log(gyro_data);
 }
+ 
+if ( gyro ) {
+    update_telemetry();
+}
+
+module.exports = update_telemetry;
