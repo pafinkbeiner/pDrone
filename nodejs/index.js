@@ -145,7 +145,10 @@ const flight = () => {
     }
 }
 
-var { PWM_VL, PWM_VR, PWM_HL, PWM_HR } = init();
+rpio.open(15, rpio.INPUT);
+console.log('Pin 15 is currently ' + (rpio.read(15) ? 'high' : 'low'));
+
+//var { PWM_VL, PWM_VR, PWM_HL, PWM_HR } = init();
 
 setInterval(() => {
     console.log(update_telemetry());
