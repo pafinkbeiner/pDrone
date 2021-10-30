@@ -42,6 +42,7 @@ io.on("command", (arg1) => {
 });
 
 io.on("flight", (arg1) => {
+    console.log("Flight started: ", arg1);
     const data = JSON.parse(arg1);
     if(data['flight'] == 1){
         motor = {
@@ -91,7 +92,7 @@ const flight = async() => {
 
         setTimeout(() => {
             // get gyro information
-
+            console.log(update_telemetry());
             // get stabilisation values
 
             // update motor values

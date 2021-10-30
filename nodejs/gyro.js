@@ -16,7 +16,7 @@ async function update_telemetry() {
         rollpitch: gyro.get_roll_pitch( gyro_xyz, accel_xyz )
     }
     
-    console.log(gyro_data);
+    return gyro_data;
 }
  
 if ( gyro ) {
