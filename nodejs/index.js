@@ -118,5 +118,9 @@ const flight = async() => {
     }
 }
 
+setInterval(() => {
+    console.log(update_telemetry());
+}, 1000);
+
 console.log("Server starting on Port: 8080");
 io.listen(8080)

@@ -18,9 +18,6 @@ async function update_telemetry() {
     
     return gyro_data;
 }
- 
-if ( gyro ) {
-    update_telemetry();
-}
+
 
 module.exports = update_telemetry;
