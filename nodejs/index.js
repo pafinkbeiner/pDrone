@@ -1,5 +1,7 @@
 const { Server } = require("socket.io");
-const update_telemetry = require("./gyro");
+
+const update_telemetry = process.env.ENV == "production" ? require("./gyro") : require("./test/gyro.test");
+const PWM = process.env.ENV == "production" ? require("./pwm") : require("./test/pwm.test");
 
 const io = new Server();
 
