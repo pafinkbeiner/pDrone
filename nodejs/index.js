@@ -1,8 +1,10 @@
-const mpu = require("mpu6050");
 const { Server } = require("socket.io");
-const rpio = require("rpio");
+const MPU6050 = require("./gyro");
 
 const io = new Server(3000);
+
+const gyro = new MPU6050();
+gyro.getValue();
 
 const application = {
     onFlight: false
