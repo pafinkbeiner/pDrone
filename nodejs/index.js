@@ -146,8 +146,18 @@ const flight = () => {
     }
 }
 
+rpio.init({
+    mapping: 'physical',
+    gpiomem: false,
+    mock: false
+});
+
 rpio.open(15, rpio.INPUT);
 console.log('Pin 15 is currently ' + (rpio.read(15) ? 'high' : 'low'));
+rpio.open(12, rpio.PWM);
+rpio.pwmSetClockDivider(64);
+rpio.pwmSetRange(12, 1024);
+rpio.pwmSetData(12, 512);
 
 //var { PWM_VL, PWM_VR, PWM_HL, PWM_HR } = init();
 
