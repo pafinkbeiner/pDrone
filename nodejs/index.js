@@ -1,7 +1,7 @@
 const { Server } = require("socket.io");
 const update_telemetry = require("./gyro");
 
-const io = new Server(3000);
+const io = new Server();
 
 const application = {
     onFlight: false
@@ -103,4 +103,4 @@ const flight = async() => {
     }
 }
 
-io.listen()
+io.listen(3000)
