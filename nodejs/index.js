@@ -91,10 +91,10 @@ const stabilisation = async() => {
 
 const init = () => {    
     console.log("Initializing...");
-    let PWM_VL = new PWM(13, 15625).setup();
-    let PWM_VR = new PWM(18, 15625).setup();
-    let PWM_HL = new PWM(19, 15625).setup();
-    let PWM_HR = new PWM(12, 15625).setup();
+    let PWM_VL = new PWM(12, 15625).setup();
+    let PWM_VR = new PWM(32, 15625).setup();
+    let PWM_HL = new PWM(33, 15625).setup();
+    let PWM_HR = new PWM(35, 15625).setup();
     console.log("Initialized!");
 
     return {
