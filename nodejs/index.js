@@ -30,6 +30,7 @@ io.on("disconnect", (socket) => {
 });
 
 io.on("command", (arg1) => {
+    console.log("Command received: ", arg1);
     const data = JSON.parse(arg1);
     command = {
         vl: data['vl'],
@@ -82,7 +83,11 @@ const calibrate = () => {
 
 const flight = async() => {
     
+    console.log("Flight started");
+
     while(application.onFlight){
+
+        console.log("onFLight is true");
 
         setTimeout(() => {
             // get gyro information
