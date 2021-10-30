@@ -1,4 +1,5 @@
 const { Server } = require("socket.io");
+const rpio = require("rpio");
 
 const dotenv = require("dotenv")
 dotenv.config();
