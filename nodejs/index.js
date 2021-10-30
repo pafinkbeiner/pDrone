@@ -3,9 +3,6 @@ const update_telemetry = require("./gyro");
 
 const io = new Server(3000);
 
-const gyro = new MPU6050("");
-gyro.getValue();
-
 const application = {
     onFlight: false
 }

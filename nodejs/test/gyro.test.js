@@ -1,16 +1,11 @@
 
 async function update_telemetry() {
     
-    var gyro_xyz = {x: 4, y: 5, z: 6};
-    var accel_xyz = { x: 7, y: 8, z: 9 };
+    var gyro_data = { gyro_xyz: { x: 112, y: 240, z: -472 },
+    accel_xyz: { x: -288, y: 1156, z: 15744 },                                                                                                                                                                                                 
+    rollpitch: { roll: 1.7578125, pitch: -7.0556640625 } }
     
-    var gyro_data = {
-        gyro_xyz: gyro_xyz,
-        accel_xyz: accel_xyz,
-        rollpitch: { roll: 10, pitch: 11 }
-    }
-    
-    console.log(gyro_data);
+    return gyro_data;
 }
 
 module.exports = update_telemetry;
