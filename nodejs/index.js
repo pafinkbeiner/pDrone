@@ -75,12 +75,34 @@ io.on("flight", (arg1) => {
 
 io.on("motor", () => io.emit("motor", JSON.stringify(motor)));
 
-const stabilisation = () => {
-
+//{ 
+//    gyro_xyz: { x: -15, y: 12, z: -19 },
+//    accel_xyz: { x: -512, y: 1136, z: 16176 },
+//    rollpitch: { roll: 3.125, pitch: -6.93359375 } 
+//} 
+const stabilisation = async() => {
+    return {
+        vl: 0,
+        vr: 0,
+        hl: 0,
+        hr: 0
+    }
 }
 
-const init = () => {
+const init = () => {    
+    console.log("Initializing...");
+    let PWM_VL = new PWM(13, 15625).setup();
+    let PWM_VR = new PWM(18, 15625).setup();
+    let PWM_HL = new PWM(19, 15625).setup();
+    let PWM_HR = new PWM(12, 15625).setup();
+    console.log("Initialized!");
 
+    return {
+        PWM_VL,
+        PWM_VR,
+        PWM_HL,
+        PWM_HR
+    }
 }
 
 const arm = () => {
@@ -91,7 +113,7 @@ const calibrate = () => {
 
 }
 
-const flight = async() => {
+const flight = () => {
     
     console.log("Flight started");
 
@@ -99,13 +121,18 @@ const flight = async() => {
 
         console.log("onFLight is true");
 
-        setTimeout(() => {
+        setTimeout(async () => {
             // get gyro information
-            console.log(update_telemetry());
+            const gyroData = await update_telemetry();
             // get stabilisation values
-
+            const stabData = await stabilisation(gyroData);
             // update motor values
-
+            motor = {
+                vl: stabData.vl + command.vl,
+                vr: stabData.vr + command.vr,
+                hl: stabData.hl + command.hl,
+                hr: stabData.hr + command.hr
+            }
             // set back command
             command = {
                 vl: 0,
@@ -117,6 +144,8 @@ const flight = async() => {
         
     }
 }
+
+var { PWM_VL, PWM_VR, PWM_HL, PWM_HR } = init();
 
 setInterval(() => {
     console.log(update_telemetry());
