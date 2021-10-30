@@ -1,5 +1,7 @@
 const { Server } = require("socket.io");
 
+console.log("Firmware starting in "+process.env.ENV);
+
 const update_telemetry = process.env.ENV == "production" ? require("./gyro") : require("./test/gyro.test");
 const PWM = process.env.ENV == "production" ? require("./pwm") : require("./test/pwm.test");
 
@@ -22,6 +24,8 @@ let command = {
     hl: 0,
     hr: 0
 }
+
+console.log("Register listeners...");
 
 io.on("connection", (socket) => {
     console.log("Client connected! Socket id: ", socket.id);
@@ -111,4 +115,5 @@ const flight = async() => {
     }
 }
 
-io.listen(3000)
+console.log("Server starting on Port: 8080");
+io.listen(8080)
