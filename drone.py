@@ -144,7 +144,7 @@ def flight():
                 'hr': stabRes['hr'] + command['hr']
             })
 
-            control.setMotorState(motor)
+            control.setServoSpeed(motor)
 
             # set back control state after changing
             command.update({
