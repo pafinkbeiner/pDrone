@@ -3,7 +3,6 @@ from flask import request
 import time
 import json
 import logging
-from PyAccessPoint import pyaccesspoint
 from threading import Thread
 import sys
 import os
@@ -12,6 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 if os.environ.get("env") == "production":
+    from PyAccessPoint import pyaccesspoint
     import control as control
     import gyro as gyro
 else:
@@ -20,9 +20,9 @@ else:
 
 ###################### init ####################
 app = Flask(__name__)
-access_point = pyaccesspoint.AccessPoint(
-    wlan="wlan0", ssid="drone", password="12345678", netmask="255.255.255.252", ip="10.0.0.1")
 if os.environ.get("env") == "production":
+    access_point = pyaccesspoint.AccessPoint(
+    wlan="wlan0", ssid="drone", password="12345678", netmask="255.255.255.252", ip="10.0.0.1")
     access_point.start()
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(asctime)s]: {} %(levelname)s %(message)s'.format(
@@ -33,7 +33,7 @@ logger = logging.getLogger()
 port = os.environ.get("port")
 application = {
     'onFlight': False,
-    'stabilisationRate': 0.2
+    'stabilisationRate': 0.1
 }
 command = {
     'vl': 0,
@@ -156,7 +156,7 @@ def flight():
 
             print("Took: "+str(round(time.time() * 1000) - last_time)+"ms")
 
-        # time.sleep(application["stabilisationRate"])
+        time.sleep(application["stabilisationRate"])
 
 
 def start_app():
@@ -240,18 +240,22 @@ def flight_route(b):
             return json.dumps("Started")
     else:
         # stop flight thread
-        application['onFlight'] = False
         motor.update({
             'vl': 1500,
             'vr': 1500,
             'hl': 1500,
             'hr': 1500
         })
+        application['onFlight'] = False
         return json.dumps("Stopped")
 
 @app.route("/kill")
 def kill_route():
     sys.exit()
+
+@app.route("/motor")
+def motor_route():
+    return json.dumps(motor)
 
 ###################### prod #####################
 t2.start()
