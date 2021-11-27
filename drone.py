@@ -183,7 +183,7 @@ def init_route():
     return json.dumps(res)
 
 @app.route("/calibrate")
-def icalibrate_route():
+def calibrate_route():
     res = control.calibrate()
     return json.dumps("true")
 
