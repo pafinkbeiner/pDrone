@@ -7,21 +7,28 @@ from PyAccessPoint import pyaccesspoint
 from threading import Thread
 import sys
 import os
-import control as control
-import gyro as gyro
-
+from dotenv import Dotenv
+Dotenv.load_dotenv()
+if os.environ.get("env") == "production":
+    import control as control
+    import gyro as gyro
+else:
+    import control_test as control
+    import gyro_test as gyro
 
 ###################### init ####################
 app = Flask(__name__)
-access_point = pyaccesspoint.AccessPoint(wlan="wlan0", ssid="drone", password="12345678", netmask="255.255.255.252", ip="10.0.0.1")
-access_point.start()
+access_point = pyaccesspoint.AccessPoint(
+    wlan="wlan0", ssid="drone", password="12345678", netmask="255.255.255.252", ip="10.0.0.1")
+if os.environ.get("env") == "production":
+    access_point.start()
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(asctime)s]: {} %(levelname)s %(message)s'.format(
                         os.getpid()),
                     datefmt='%Y-%m-%d %H:%M:%S',
                     handlers=[logging.StreamHandler()])
 logger = logging.getLogger()
-port = 8080
+port = os.environ.get("port")
 application = {
     'onFlight': False,
     'stabilisationRate': 2
@@ -151,7 +158,7 @@ def flight():
 
 
 def start_app():
-    app.run(host='0.0.0.0', port=8080, debug=False)
+    app.run(host='0.0.0.0', port=port, debug=False)
 
 
 #################### threads ###################
@@ -174,12 +181,12 @@ def init_route():
     return json.dumps(res)
 
 @app.route("/calibrate")
-def calibrate_route():
+def init_route():
     res = control.calibrate()
     return json.dumps("true")
 
 @app.route("/arm")
-def arm_route():
+def init_route():
     res = control.arm()
     return json.dumps("true")
 
