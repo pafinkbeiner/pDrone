@@ -183,12 +183,12 @@ def init_route():
     return json.dumps(res)
 
 @app.route("/calibrate")
-def init_route():
+def icalibrate_route():
     res = control.calibrate()
     return json.dumps("true")
 
 @app.route("/arm")
-def init_route():
+def arm_route():
     res = control.arm()
     return json.dumps("true")
 
