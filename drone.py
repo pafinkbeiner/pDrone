@@ -6,9 +6,9 @@ import logging
 from PyAccessPoint import pyaccesspoint
 from threading import Thread
 import sys
-from dotenv import load_dotenv
 import os
-load_dotenv()
+# from dotenv import load_dotenv
+# load_dotenv()
 if os.environ.get("env") == "production":
     import control as control
     import gyro as gyro
