@@ -142,6 +142,8 @@ def flight():
                 'hr': stabRes['hr'] + command['hr']
             })
 
+            control.setMotorState(motor)
+
             # set back control state after changing
             command.update({
                 'vl': 0,
@@ -178,6 +180,15 @@ def init_route():
     res = initialize()
     return json.dumps(res)
 
+@app.route("/calibrate")
+def init_route():
+    res = control.calibrate()
+    return json.dumps("true")
+
+@app.route("/arm")
+def init_route():
+    res = control.arm()
+    return json.dumps("true")
 
 @app.route("/command", methods=['POST'])
 def command_route():
