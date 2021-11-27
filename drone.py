@@ -241,6 +241,12 @@ def flight_route(b):
     else:
         # stop flight thread
         application['onFlight'] = False
+        motor.update({
+            'vl': 1500,
+            'vr': 1500,
+            'hl': 1500,
+            'hr': 1500
+        })
         return json.dumps("Stopped")
 
 @app.route("/kill")
