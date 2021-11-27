@@ -33,7 +33,7 @@ logger = logging.getLogger()
 port = os.environ.get("port")
 application = {
     'onFlight': False,
-    'stabilisationRate': 2
+    'stabilisationRate': 0.2
 }
 command = {
     'vl': 0,
