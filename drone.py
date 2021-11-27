@@ -156,7 +156,7 @@ def flight():
 
             print("Took: "+str(round(time.time() * 1000) - last_time)+"ms")
 
-        time.sleep(application["stabilisationRate"])
+        # time.sleep(application["stabilisationRate"])
 
 
 def start_app():
