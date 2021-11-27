@@ -8,5 +8,10 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "mpu6050-gyro": "^1.1.1",
+    "rpio": "^2.4.2"
+  }
 }
