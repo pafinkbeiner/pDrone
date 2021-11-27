@@ -7,28 +7,21 @@ from PyAccessPoint import pyaccesspoint
 from threading import Thread
 import sys
 import os
-from dotenv import Dotenv
-Dotenv.load_dotenv()
-if os.environ.get("env") == "production":
-    import control as control
-    import gyro as gyro
-else:
-    import control_test as control
-    import gyro_test as gyro
+import control as control
+import gyro as gyro
+
 
 ###################### init ####################
 app = Flask(__name__)
-access_point = pyaccesspoint.AccessPoint(
-    wlan="wlan0", ssid="drone", password="12345678", netmask="255.255.255.252", ip="10.0.0.1")
-if os.environ.get("env") == "production":
-    access_point.start()
+access_point = pyaccesspoint.AccessPoint(wlan="wlan0", ssid="drone", password="12345678", netmask="255.255.255.252", ip="10.0.0.1")
+access_point.start()
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(asctime)s]: {} %(levelname)s %(message)s'.format(
                         os.getpid()),
                     datefmt='%Y-%m-%d %H:%M:%S',
                     handlers=[logging.StreamHandler()])
 logger = logging.getLogger()
-port = os.environ.get("port")
+port = 8080
 application = {
     'onFlight': False,
     'stabilisationRate': 2
