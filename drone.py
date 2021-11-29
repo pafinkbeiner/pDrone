@@ -2,7 +2,6 @@ from flask import Flask
 from flask import request
 import time
 import json
-import logging
 from threading import Thread
 import sys
 import os
@@ -21,15 +20,13 @@ else:
 ###################### init ####################
 app = Flask(__name__)
 if os.environ.get("env") == "production":
+    print("Starting Access Point...")
     access_point = pyaccesspoint.AccessPoint(
     wlan="wlan0", ssid="drone", password="12345678", netmask="255.255.255.252", ip="10.0.0.1")
     access_point.start()
-logging.basicConfig(level=logging.DEBUG,
-                    format='[%(asctime)s]: {} %(levelname)s %(message)s'.format(
-                        os.getpid()),
-                    datefmt='%Y-%m-%d %H:%M:%S',
-                    handlers=[logging.StreamHandler()])
-logger = logging.getLogger()
+
+print("Initialize global Variables...")
+
 port = os.environ.get("port")
 application = {
     'onFlight': False,
@@ -62,12 +59,13 @@ def setMotorState(newState):
 
 
 def initialize():
-    logger.log(1, "Initialize Startup Sequence")
+
+    print("Initializing...")
+    # check accesss point status if run in production
     check0 = True
     if os.environ.get("env") == "production":
         check0 = access_point.is_running()
 
-    logger.log(1, "Initialize gyro...")
     # check correctness of gyro sensor
     check1 = type(gyro.get_scaled_x_out()) == int or float
     check2 = type(gyro.get_scaled_y_out()) == int or float
@@ -87,21 +85,17 @@ def initialize():
     })
 
     if check0 and check1 and check2 and check3 and check4 and check5 and check6:
-        logger.log(1, "Startup performed successfully")
         return True
     else:
-        logger.log(1, "Error occured while checking system")
         return False
 
 
 def calibrate():
-    logger.log(1, "Initialize Calibrate")
     check7 = control.calibrate()
     return check7
 
 
 def arm():
-    logger.log(1, "Initialize arm")
     check8 = control.arm()
     return check8
 
@@ -144,6 +138,7 @@ def flight():
                 'hr': stabRes['hr'] + command['hr']
             })
 
+            # set new motor speed on servos
             control.setServoSpeed(motor)
 
             # set back control state after changing
@@ -194,15 +189,14 @@ def arm_route():
 
 @app.route("/command", methods=['POST'])
 def command_route():
-    parsedData = request.data
-    print(parsedData)
+    parsedData = json.loads(request.data)
     # update motor
-    # command.update({
-    #     'vl': parsedData['vl'],
-    #     'vr': parsedData['vr'],
-    #     'hl': parsedData['hl'],
-    #     'hr': parsedData['hr']
-    # })
+    command.update({
+        'vl': parsedData['vl'],
+        'vr': parsedData['vr'],
+        'hl': parsedData['hl'],
+        'hr': parsedData['hr']
+    })
     return json.dumps("Received")
 
 
@@ -240,12 +234,7 @@ def flight_route(b):
             return json.dumps("Started")
     else:
         # stop flight thread
-        motor.update({
-            'vl': 1500,
-            'vr': 1500,
-            'hl': 1500,
-            'hr': 1500
-        })
+        control.stop()
         application['onFlight'] = False
         return json.dumps("Stopped")
 
@@ -258,4 +247,9 @@ def motor_route():
     return json.dumps(motor)
 
 ###################### prod #####################
+# start main program
+initialize()
+calibrate()
+
+
 t2.start()
