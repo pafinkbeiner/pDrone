@@ -6,6 +6,7 @@ from threading import Thread
 import sys
 import os
 from dotenv import load_dotenv
+import direction
 
 load_dotenv()
 
@@ -199,6 +200,24 @@ def command_route():
     })
     return json.dumps("Received")
 
+@app.route("/degree/<deg>/<max>/<force>")
+def degree_route(deg, max, force):
+
+    parsedDeg = float(deg)
+    parsedMax = float(max)
+    parsedForce = float(force)
+    
+    if (type(parsedDeg) == int or float) and (type(parsedMax) == int or float) and (type(parsedForce) == int or float):
+        dta = direction.degree2motor(parsedDeg, parsedMax, parsedForce)
+        command.update({
+            'vl': dta['vl'],
+            'vr': dta['vr'],
+            'hl': dta['hl'],
+            'hr': dta['hr']
+        })
+        return json.dumps("Received")
+    else: 
+        json.dumps("Wrong type!")
 
 @app.route("/command/<key>/<value>")
 def command_alt_route(key, value):
