@@ -32,7 +32,7 @@ print("Initialize global Variables...")
 port = os.environ.get("port")
 application = {
     'onFlight': False,
-    'stabilisationRate': 0.2
+    'stabilisationRate': 0
 }
 
 maxCorrection = 30
@@ -123,9 +123,9 @@ def calibrateGyro():
         "y": gyro.get_acc_y_out()
     })
 
-def arm():
-    check8 = control.arm()
-    return check8
+# def arm():
+#     check8 = control.arm()
+#     return check8
 
 
 def flight():
@@ -197,10 +197,10 @@ def calibrate_route():
     res = control.calibrate()
     return json.dumps("true")
 
-@app.route("/arm")
-def arm_route():
-    res = control.arm()
-    return json.dumps("true")
+# @app.route("/arm")
+# def arm_route():
+#     res = control.arm()
+#     return json.dumps("true")
 
 @app.route("/command", methods=['POST'])
 def command_route():
@@ -283,6 +283,6 @@ def motor_route():
 # start main program
 initRes = initialize()
 if initRes == True: print("Init Process sucessfull!")
-calibrate()
+# calibrate()
 
 t2.start()
