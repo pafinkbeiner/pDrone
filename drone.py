@@ -10,7 +10,6 @@ import direction
 
 # load env for using env variables
 load_dotenv()
-
 if os.environ.get("env") == "production":
     from PyAccessPoint import pyaccesspoint
     import control as control
