@@ -7,6 +7,7 @@ import sys
 import os
 from dotenv import load_dotenv
 import direction
+import stability
 
 # load env for using env variables
 load_dotenv()
@@ -31,8 +32,10 @@ print("Initialize global Variables...")
 port = os.environ.get("port")
 application = {
     'onFlight': False,
-    'stabilisationRate': 1
+    'stabilisationRate': 0.2
 }
+
+maxCorrection = 30
 
 maxCommand = 20
 minCommand = maxCommand * (-1)
@@ -125,13 +128,6 @@ def arm():
     return check8
 
 
-def stabilisation(x, y):
-    print("Stabilisation..")
-    # use access to gyroBase
-    # normalize delta before adding to new motor state
-    return {'vl': 0, 'vr':0, 'hl': 0, 'hr': 0}
-
-
 def flight():
 
     while True:
@@ -146,14 +142,15 @@ def flight():
             gyroY = gyro.get_acc_y_out()
 
             # get new stabilasation values (motor delta)
-            stabRes = stabilisation(gyroX, gyroY)
+            stabRes = stability.correct(gyroX, gyroY, gyroBase, maxCorrection)
+            stabResNormalized = direction.normalize(stabRes)
 
             # refresh motor state with control values and stabilist values
             setMotorState({
-                'vl': motor['vl'] + stabRes['vl'] + command['vl'],
-                'vr': motor['vr'] + stabRes['vr'] + command['vr'],
-                'hl': motor['hl'] + stabRes['hl'] + command['hl'],
-                'hr': motor['hr'] + stabRes['hr'] + command['hr']
+                'vl': motor['vl'] + stabResNormalized['vl'] + command['vl'],
+                'vr': motor['vr'] + stabResNormalized['vr'] + command['vr'],
+                'hl': motor['hl'] + stabResNormalized['hl'] + command['hl'],
+                'hr': motor['hr'] + stabResNormalized['hr'] + command['hr']
             })
 
             # set new motor speed on servos
