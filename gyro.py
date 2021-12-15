@@ -56,6 +56,7 @@ def get_y_out():
 def get_z_out():
     return read_word_2c(0x47)
 
+
 def get_acc_x_out():
     return read_word_2c(0x3b)
 
@@ -64,6 +65,9 @@ def get_acc_y_out():
 
 def get_acc_z_out():
     return read_word_2c(0x3f)
+
+def get_acc_x_y_z_out():
+    return { 'x': get_acc_x_out(), 'y': get_acc_y_out(), 'z': get_acc_z_out()}
 
 #### scaled ####
 def get_scaled_x_y_z_out():
@@ -126,11 +130,11 @@ bus.write_byte_data(address, power_mgmt_1, 0)
 # print ("X Rotation: " , get_x_rotation(beschleunigung_xout_skaliert, beschleunigung_yout_skaliert, beschleunigung_zout_skaliert))
 # print ("Y Rotation: " , get_y_rotation(beschleunigung_xout_skaliert, beschleunigung_yout_skaliert, beschleunigung_zout_skaliert))
 
-while True:
-    print("Sensor X: "+str(read_word_2c(0x43)))
-    print("Sensor X: "+str(read_word_2c(0x45)))
-    print("Sensor X: "+str(read_word_2c(0x47)))
-    print ("X Rotation: " , get_x_rotation(beschleunigung_xout_skaliert, beschleunigung_yout_skaliert, beschleunigung_zout_skaliert))
-    print ("Y Rotation: " , get_y_rotation(beschleunigung_xout_skaliert, beschleunigung_yout_skaliert, beschleunigung_zout_skaliert))
-    time.sleep(1)
-    print("---------------------------------------")
+# while True:
+#     print("Sensor X: "+str(read_word_2c(0x43)))
+#     print("Sensor X: "+str(read_word_2c(0x45)))
+#     print("Sensor X: "+str(read_word_2c(0x47)))
+#     print ("X Rotation: " , get_x_rotation(beschleunigung_xout_skaliert, beschleunigung_yout_skaliert, beschleunigung_zout_skaliert))
+#     print ("Y Rotation: " , get_y_rotation(beschleunigung_xout_skaliert, beschleunigung_yout_skaliert, beschleunigung_zout_skaliert))
+#     time.sleep(1)
+#     print("---------------------------------------")

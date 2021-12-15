@@ -150,11 +150,10 @@ def flight():
             last_time = round(time.time() * 1000)
 
             # get gyro base information -> data & acc
-            gyrod = gyro.get_scaled_x_y_z_out()
-            gyroacc = gyro.get_scaled_acc_x_y_z_out()
+            gyroXYZ = gyro.get_acc_x_y_z_out()
 
-            print(gyrod)
-            print(gyroacc)
+            print(gyroXYZ)
+
 
             # get gyro rotation information
             rotx = gyro.get_x_rotation(
@@ -308,5 +307,4 @@ if initRes == True: print("Init Process sucessfull!")
 # debug
 application['onFlight'] = True
 flight()
-
 t2.start()
