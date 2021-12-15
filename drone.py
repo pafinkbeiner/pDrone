@@ -283,8 +283,6 @@ def motor_route():
 # start main program
 initRes = initialize()
 if initRes == True: print("Init Process sucessfull!")
-# calibrate()
-# debug
-application['onFlight'] = True
-flight()
+calibrate()
+
 t2.start()
