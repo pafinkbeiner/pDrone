@@ -154,16 +154,9 @@ def flight():
 
             print(gyroXYZ)
 
-
-            # get gyro rotation information
-            rotx = gyro.get_x_rotation(
-                gyroacc['x'], gyroacc['y'], gyroacc['z'])
-            roty = gyro.get_y_rotation(
-                gyroacc['x'], gyroacc['y'], gyroacc['z'])
-
             # get new stabilasation values
             stabRes = stabilisation(
-                gyrod['x'], gyrod['y'], gyrod['z'], prev=motor)
+                gyroXYZ['x'], gyroXYZ['y'], gyroXYZ['z'], prev=motor)
 
             # refresh motor state with control values and stabilist values
             setMotorState({
