@@ -45,6 +45,7 @@ command = {
     'hl': 0,
     'hr': 0
 }
+maxMotor = 2499
 motor = {
     'vl': 1510,
     'vr': 1510,
@@ -59,7 +60,22 @@ gyroBase = {
 ###################### main ####################
 
 def setMotorState(newState):
-    motor.update(newState)
+    newvl = newState['vl']
+    newvr = newState['vr']
+    newhl = newState['hl']
+    newhr = newState['hr']
+    # check max value
+    if newvl > maxMotor: newvl = maxMotor
+    if newvr > maxMotor: newvr = maxMotor
+    if newhl > maxMotor: newhl = maxMotor
+    if newhr > maxMotor: newhr = maxMotor
+    command.update({
+        'vl': newvl,
+        'vr': newvr,
+        'hl': newhl,
+        'hr': newhr
+    })
+
     print("Updated motor values: ", motor)
 
 # set delta for command 
@@ -283,6 +299,6 @@ def motor_route():
 # start main program
 initRes = initialize()
 if initRes == True: print("Init Process sucessfull!")
-# calibrate()
+calibrate()
 
 t2.start()
