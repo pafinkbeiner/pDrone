@@ -50,11 +50,7 @@ motor = {
 }
 gyroBase = {
     "x": 0,
-    "y": 0,
-    "z": 0,
-    "x_s": 0,
-    "y_s": 0,
-    "z_s": 0
+    "y": 0
 }
 
 ###################### main ####################
@@ -120,12 +116,8 @@ def calibrate():
 
 def calibrateGyro():
     gyroBase.update({
-        "x": gyro.get_scaled_x_out(),
-        "y": gyro.get_scaled_y_out(),
-        "z": gyro.get_scaled_z_out(),
-        "x_s": gyro.get_scaled_acc_x_out(),
-        "y_s": gyro.get_scaled_acc_y_out(),
-        "z_s": gyro.get_scaled_acc_z_out()
+        "x": gyro.get_acc_x_out(),
+        "y": gyro.get_acc_y_out()
     })
 
 def arm():
@@ -133,11 +125,11 @@ def arm():
     return check8
 
 
-def stabilisation(x, y, z, prev=motor, command=command):
+def stabilisation(x, y):
     print("Stabilisation..")
     # use access to gyroBase
     # normalize delta before adding to new motor state
-    return {'vl': prev['vl'], 'vr': prev['vr'], 'hl': prev['hl'], 'hr': prev['hr']}
+    return {'vl': 0, 'vr':0, 'hl': 0, 'hr': 0}
 
 
 def flight():
@@ -150,20 +142,18 @@ def flight():
             last_time = round(time.time() * 1000)
 
             # get gyro base information -> data & acc
-            gyroXYZ = gyro.get_acc_x_y_z_out()
+            gyroX = gyro.get_acc_x_out()
+            gyroY = gyro.get_acc_y_out()
 
-            print(gyroXYZ)
-
-            # get new stabilasation values
-            stabRes = stabilisation(
-                gyroXYZ['x'], gyroXYZ['y'], gyroXYZ['z'], prev=motor)
+            # get new stabilasation values (motor delta)
+            stabRes = stabilisation(gyroX, gyroY)
 
             # refresh motor state with control values and stabilist values
             setMotorState({
-                'vl': stabRes['vl'] + command['vl'],
-                'vr': stabRes['vr'] + command['vr'],
-                'hl': stabRes['hl'] + command['hl'],
-                'hr': stabRes['hr'] + command['hr']
+                'vl': motor['vl'] + stabRes['vl'] + command['vl'],
+                'vr': motor['vr'] + stabRes['vr'] + command['vr'],
+                'hl': motor['hl'] + stabRes['hl'] + command['hl'],
+                'hr': motor['hr'] + stabRes['hr'] + command['hr']
             })
 
             # set new motor speed on servos
