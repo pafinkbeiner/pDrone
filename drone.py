@@ -32,7 +32,7 @@ print("Initialize global Variables...")
 port = os.environ.get("port")
 application = {
     'onFlight': False,
-    'stabilisationRate': 0
+    'stabilisationRate': 0.1
 }
 
 maxCorrection = 30
