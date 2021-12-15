@@ -69,7 +69,7 @@ def setMotorState(newState):
     if newvr > maxMotor: newvr = maxMotor
     if newhl > maxMotor: newhl = maxMotor
     if newhr > maxMotor: newhr = maxMotor
-    command.update({
+    motor.update({
         'vl': newvl,
         'vr': newvr,
         'hl': newhl,
