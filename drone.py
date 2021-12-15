@@ -32,7 +32,7 @@ print("Initialize global Variables...")
 port = os.environ.get("port")
 application = {
     'onFlight': False,
-    'stabilisationRate': 0.1
+    'stabilisationRate': 2000
 }
 
 maxCommand = 20
@@ -153,6 +153,9 @@ def flight():
             # get gyro base information -> data & acc
             gyrod = gyro.get_scaled_x_y_z_out()
             gyroacc = gyro.get_scaled_acc_x_y_z_out()
+
+            print(gyrod)
+            print(gyroacc)
 
             # get gyro rotation information
             rotx = gyro.get_x_rotation(
@@ -300,8 +303,11 @@ def motor_route():
 
 ###################### prod #####################
 # start main program
-initialize()
-calibrate()
-
+initRes = initialize()
+if initRes == True: print("Init Process sucessfull!")
+# calibrate()
+# debug
+application['onFlight'] = True
+flight()
 
 t2.start()
