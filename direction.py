@@ -24,5 +24,13 @@ def degree2motor(degree, max, force = 1):
 def f(x, max): 
     return math.floor((max / 180) * x)
 
-def motor2angle(motor):
-    return motor
+def normalize(motor):
+    sum = motor["vl"] + motor["vr"] + motor["hl"] + motor["hr"]
+    x = math.floor(sum / 4)
+
+    return {
+        "vr": motor["vr"] - x,
+        "vl": motor["vl"] - x,
+        "hl": motor["hl"] - x,
+        "hr": motor["hr"] - x
+    }

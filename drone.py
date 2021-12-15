@@ -8,6 +8,7 @@ import os
 from dotenv import load_dotenv
 import direction
 
+# load env for using env variables
 load_dotenv()
 
 if os.environ.get("env") == "production":
@@ -33,6 +34,9 @@ application = {
     'onFlight': False,
     'stabilisationRate': 0.1
 }
+
+maxCommand = 20
+minCommand = maxCommand * (-1)
 command = {
     'vl': 0,
     'vr': 0,
@@ -48,16 +52,43 @@ motor = {
 gyroBase = {
     "x": 0,
     "y": 0,
-    "z": 0
+    "z": 0,
+    "x_s": 0,
+    "y_s": 0,
+    "z_s": 0
 }
 
 ###################### main ####################
-
 
 def setMotorState(newState):
     motor.update(newState)
     print("Updated motor values: ", motor)
 
+# set delta for command 
+def setCommandState(newState):
+    # it should always be: minCommand < newState['x'] < maxCommand
+    # f.e. -5 < 1 < 5
+    newvl = newState['vl']
+    newvr = newState['vr']
+    newhl = newState['hl']
+    newhr = newState['hr']
+    # check max value
+    if newvl > maxCommand: newvl = maxCommand
+    if newvr > maxCommand: newvr = maxCommand
+    if newhl > maxCommand: newhl = maxCommand
+    if newhr > maxCommand: newhr = maxCommand
+    # check min value
+    if newvl < minCommand: newvl = minCommand
+    if newvr < minCommand: newvr = minCommand
+    if newhl < minCommand: newhl = minCommand
+    if newhr < minCommand: newhr = minCommand
+    command.update({
+        'vl': newvl,
+        'vr': newvr,
+        'hl': newhl,
+        'hr': newhr
+    })
+    print("Updated command values: ", motor)
 
 def initialize():
 
@@ -76,14 +107,7 @@ def initialize():
     check6 = type(gyro.get_scaled_acc_z_out()) == int or float
 
     # set current gyro position as default
-    gyroBase.update({
-        "x": gyro.get_scaled_x_out(),
-        "y": gyro.get_scaled_y_out(),
-        "z": gyro.get_scaled_z_out(),
-        "x_s": gyro.get_scaled_acc_x_out(),
-        "y_s": gyro.get_scaled_acc_y_out(),
-        "z_s": gyro.get_scaled_acc_z_out()
-    })
+    calibrateGyro()
 
     if check0 and check1 and check2 and check3 and check4 and check5 and check6:
         return True
@@ -95,16 +119,25 @@ def calibrate():
     check7 = control.calibrate()
     return check7
 
+def calibrateGyro():
+    gyroBase.update({
+        "x": gyro.get_scaled_x_out(),
+        "y": gyro.get_scaled_y_out(),
+        "z": gyro.get_scaled_z_out(),
+        "x_s": gyro.get_scaled_acc_x_out(),
+        "y_s": gyro.get_scaled_acc_y_out(),
+        "z_s": gyro.get_scaled_acc_z_out()
+    })
 
 def arm():
     check8 = control.arm()
     return check8
 
 
-def stabilisation(x, y, z, prev=motor):
+def stabilisation(x, y, z, prev=motor, command=command):
     print("Stabilisation..")
     # use access to gyroBase
-
+    # normalize delta before adding to new motor state
     return {'vl': prev['vl'], 'vr': prev['vr'], 'hl': prev['hl'], 'hr': prev['hr']}
 
 
@@ -142,8 +175,8 @@ def flight():
             # set new motor speed on servos
             control.setServoSpeed(motor)
 
-            # set back control state after changing
-            command.update({
+            # set back control state after changing - changing in the future
+            setCommandState({
                 'vl': 0,
                 'vr': 0,
                 'hl': 0,
@@ -192,7 +225,7 @@ def arm_route():
 def command_route():
     parsedData = json.loads(request.data)
     # update motor
-    command.update({
+    setCommandState({
         'vl': parsedData['vl'],
         'vr': parsedData['vr'],
         'hl': parsedData['hl'],
@@ -209,11 +242,12 @@ def degree_route(deg, max, force):
     
     if (type(parsedDeg) == int or float) and (type(parsedMax) == int or float) and (type(parsedForce) == int or float):
         dta = direction.degree2motor(parsedDeg, parsedMax, parsedForce)
-        command.update({
-            'vl': dta['vl'],
-            'vr': dta['vr'],
-            'hl': dta['hl'],
-            'hr': dta['hr']
+        normalized = direction.normalize(dta)
+        setCommandState({
+            'vl': normalized['vl'],
+            'vr': normalized['vr'],
+            'hl': normalized['hl'],
+            'hr': normalized['hr']
         })
         return json.dumps("Received")
     else: 
@@ -229,7 +263,6 @@ def command_alt_route(key, value):
         return json.dumps("Received")
     else:
         return json.dumps("Wrong key")
-
 
 # /flight/1 od. /flight/0
 @app.route("/flight/<b>")
