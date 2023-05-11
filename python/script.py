@@ -3,9 +3,8 @@ from __future__ import print_function
 import logging
 
 import grpc
-import hello_pb2
-import hello_pb2_grpc
-
+import grpc_libs.hello_pb2 as hello_pb2
+import grpc_libs.hello_pb2_grpc as hello_pb2_grpc
 
 def run():
     print("Will try to greet world ...")
