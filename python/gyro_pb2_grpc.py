@@ -14,8 +14,8 @@ class GyroStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.GetGyro = channel.unary_unary(
-                '/gyro.Gyro/GetGyro',
+        self.StreamGyroValues = channel.unary_unary(
+                '/gyro.Gyro/StreamGyroValues',
                 request_serializer=gyro__pb2.GyroRequest.SerializeToString,
                 response_deserializer=gyro__pb2.GyroReply.FromString,
                 )
@@ -24,7 +24,7 @@ class GyroStub(object):
 class GyroServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def GetGyro(self, request, context):
+    def StreamGyroValues(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -33,8 +33,8 @@ class GyroServicer(object):
 
 def add_GyroServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'GetGyro': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetGyro,
+            'StreamGyroValues': grpc.unary_unary_rpc_method_handler(
+                    servicer.StreamGyroValues,
                     request_deserializer=gyro__pb2.GyroRequest.FromString,
                     response_serializer=gyro__pb2.GyroReply.SerializeToString,
             ),
@@ -49,7 +49,7 @@ class Gyro(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def GetGyro(request,
+    def StreamGyroValues(request,
             target,
             options=(),
             channel_credentials=None,
@@ -59,7 +59,7 @@ class Gyro(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/gyro.Gyro/GetGyro',
+        return grpc.experimental.unary_unary(request, target, '/gyro.Gyro/StreamGyroValues',
             gyro__pb2.GyroRequest.SerializeToString,
             gyro__pb2.GyroReply.FromString,
             options, channel_credentials,

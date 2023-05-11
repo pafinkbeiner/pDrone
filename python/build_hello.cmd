@@ -1,2 +1,2 @@
-python -m grpc_tools.protoc -I../proto --python_out=grpc_libs/ --pyi_out=grpc_libs/ --grpc_python_out=grpc_libs/ ../proto/hello.proto
-python -m grpc_tools.protoc -I../proto --python_out=grpc_libs/ --pyi_out=grpc_libs/ --grpc_python_out=grpc_libs/ ../proto/gyro.proto
+python -m grpc_tools.protoc -I../proto --python_out=. --pyi_out=. --grpc_python_out=. ../proto/hello.proto
+python -m grpc_tools.protoc -I../proto --python_out=. --pyi_out=. --grpc_python_out=. ../proto/gyro.proto

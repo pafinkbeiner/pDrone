@@ -2,15 +2,15 @@ syntax = "proto3";
 package gyro;
 
 service Gyro {
-    rpc GetGyro (GyroRequest) returns (GyroReply);
+    rpc StreamGyroValues ( GyroRequest ) returns (GyroReply);
 }
 
 message GyroRequest {
-
-}
-
-message GyroReply {
     float x = 1;
     float y = 2;
     float z = 3;
+}
+
+message GyroReply {
+    bool success = 1;
 }
