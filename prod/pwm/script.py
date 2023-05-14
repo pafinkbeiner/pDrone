@@ -23,8 +23,8 @@ pi_pwm.start(0)				            #start PWM of required Duty Cycle
 pi_pwm.ChangeDutyCycle(50)
 pi_pwm.ChangeDutyCycle(100)
 while True:
-    time.time(1)
-    
+    time.sleep(1)
+
 
 # for speed in range(10, 100, 5):
 #     print(speed)
