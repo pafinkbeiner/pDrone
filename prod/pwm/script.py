@@ -35,7 +35,7 @@ pi_pwm.stop()
 pi_pwm.ChangeFrequency(1600)
 time.sleep(0.3)
 print(1600)
-pi_pwm.start(30)
+pi_pwm.start(20)
 time.sleep(5)
 
 # for speed in range(900, MAX_PWM_SPEED, 100):
