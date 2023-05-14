@@ -111,6 +111,7 @@ def destroy():
 
 
 try:
+    setup()
     pass
 except KeyboardInterrupt:
     destroy()
