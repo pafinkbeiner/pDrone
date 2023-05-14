@@ -38,8 +38,8 @@ pi_pwm.ChangeDutyCycle(50)
 # pi_pwm.start(20)
 # time.sleep(5)
 
-for speed in range(1200, MAX_PWM_SPEED, 100):
-    for duty in range(10, 100, 10):
+for speed in range(1300, MAX_PWM_SPEED, 100):
+    for duty in range(20, 50, 10):
         print("Speed: "+ str(speed) + " duty: "+ str(duty))
         pi_pwm.stop()
         pi_pwm.ChangeFrequency(speed)
