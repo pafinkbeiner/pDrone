@@ -16,15 +16,29 @@ GPIO.setwarnings(False)			        #disable warnings
 GPIO.setmode(GPIO.BOARD)		        #set pin numbering system
 GPIO.setup(ledpin,GPIO.OUT)
 
+pwm = GPIO.PWM(ledpin, 1000)
 
-# start pwm
-pi_pwm = GPIO.PWM(ledpin,1000)		    #create PWM instance with frequency
-pi_pwm.start(0)				            #start PWM of required Duty Cycle 
-pi_pwm.ChangeDutyCycle(50)
-time.sleep(3)
-pi_pwm.ChangeDutyCycle(20)
+# Set up duty cycle range for motor controller
+max_duty_cycle = 100
+min_duty_cycle = 20
 
-time.sleep(3)
+# Start PWM with 0 duty cycle
+pwm.start(0)
+
+# Gradually increase duty cycle to start motor
+for duty_cycle in range(min_duty_cycle, max_duty_cycle+1, 5):
+    pwm.ChangeDutyCycle(duty_cycle)
+    time.sleep(0.5)
+
+# Change duty cycle to maintain motor speed
+pwm.ChangeDutyCycle(50)
+while True:
+    time.sleep(1)
+
+# Clean up GPIO pins
+pwm.stop()
+GPIO.cleanup()
+
 
 # for speed in range(900, MAX_PWM_SPEED, 100):
 #     for duty in range(10, 100, 10):
