@@ -11,7 +11,7 @@ pwm_pins = {
     "hr": 32
 }
 
-ledpin = pwm_pins["hl"]				    # PWM pin connected to LED
+ledpin = pwm_pins["vr"]				    # PWM pin connected to LED
 GPIO.setwarnings(False)			        #disable warnings
 GPIO.setmode(GPIO.BOARD)		        #set pin numbering system
 GPIO.setup(ledpin,GPIO.OUT)
