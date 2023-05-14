@@ -15,15 +15,24 @@ ledpin = pwm_pins["hl"]				    # PWM pin connected to LED
 GPIO.setwarnings(False)			        #disable warnings
 GPIO.setmode(GPIO.BOARD)		        #set pin numbering system
 GPIO.setup(ledpin,GPIO.OUT)
+
+
+# start pwm
 pi_pwm = GPIO.PWM(ledpin,1000)		    #create PWM instance with frequency
 pi_pwm.start(0)				            #start PWM of required Duty Cycle 
 
-# set pwm to 1600
-pi_pwm.ChangeDutyCycle(1600)
-time.sleep(3)
+for speed in range(MAX_PWM_SPEED):
+    pi_pwm.ChangeFrequency(speed)
+    time.sleep(0.01)
+    print(speed)
 
-pi_pwm.ChangeDutyCycle(0)
-time.sleep(3)
+# set pwm to 1600
+# pi_pwm.ChangeDutyCycle(1600)
+# time.sleep(3)
+
+
+# pi_pwm.ChangeDutyCycle(0)
+# time.sleep(3)
 
 # while True:
 #     for duty in range(0,101,1):
