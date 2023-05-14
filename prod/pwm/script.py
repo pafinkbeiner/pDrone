@@ -27,6 +27,7 @@ for speed in range(1, MAX_PWM_SPEED, 100):
     time.sleep(0.3)
     print(speed)
     pi_pwm.start(100)
+    time.sleep(3)
 
 # set pwm to 1600
 # pi_pwm.ChangeDutyCycle(1600)
