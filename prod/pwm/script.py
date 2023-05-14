@@ -112,6 +112,10 @@ def destroy():
 
 try:
     setup()
+    motor_left()
+    motor_right()
+    while True: 
+        time.time(1)
     pass
 except KeyboardInterrupt:
     destroy()
