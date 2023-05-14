@@ -20,12 +20,9 @@ GPIO.setup(ledpin,GPIO.OUT)
 # start pwm
 pi_pwm = GPIO.PWM(ledpin,1000)		    #create PWM instance with frequency
 pi_pwm.start(0)				            #start PWM of required Duty Cycle 
-pi_pwm.ChangeDutyCycle(50)
+pi_pwm.ChangeDutyCycle(20)
 
-for speed in range(10, 100, 5):
-    print(speed)
-    pi_pwm.ChangeDutyCycle(speed)
-    time.sleep(3)
+time.sleep(3)
 
 # for speed in range(900, MAX_PWM_SPEED, 100):
 #     for duty in range(10, 100, 10):
