@@ -1,7 +1,7 @@
 import time   
 import pigpio 
 
-ESC=18
+ESC=19
 
 pi = pigpio.pi()
 pi.set_servo_pulsewidth(ESC, 0) 
