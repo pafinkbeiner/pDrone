@@ -20,8 +20,8 @@ GPIO.setup(ledpin,GPIO.OUT)
 # # start pwm
 pi_pwm = GPIO.PWM(ledpin, 50)
 pi_pwm.start(0)				      
-pi_pwm.ChangeDutyCycle(50)
-time.sleep(10)
+
+for speed in range(1, 100, 10):
+    pi_pwm.ChangeDutyCycle(speed)
+    time.sleep(3)
         
-pi_pwm.stop()
-GPIO.cleanup()
