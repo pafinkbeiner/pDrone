@@ -18,7 +18,7 @@ GPIO.setup(ledpin,GPIO.OUT)
 
 
 # # start pwm
-pi_pwm = GPIO.PWM(ledpin, 16000)
+pi_pwm = GPIO.PWM(ledpin, 1300)
 pi_pwm.start(0)				      
 pi_pwm.ChangeDutyCycle(75)
 time.sleep(10)
