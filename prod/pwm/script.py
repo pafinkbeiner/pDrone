@@ -18,7 +18,7 @@ GPIO.setup(ledpin,GPIO.OUT)
 
 
 # # start pwm
-pi_pwm = GPIO.PWM(ledpin, 1000)
+pi_pwm = GPIO.PWM(ledpin, 1500)
 pi_pwm.start(0)				      
 
 for speed in range(1, 100, 10):
