@@ -21,5 +21,5 @@ servo.mid()
 sleep(5)
 servo.value = None
 
-servo.value = 50
+servo.value = -1
 sleep(5)
