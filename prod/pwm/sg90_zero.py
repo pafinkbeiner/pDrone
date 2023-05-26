@@ -20,6 +20,6 @@ print("And back to middle")
 servo.mid()
 sleep(1)
 servo.value = None
-
+print("TEST -1")
 servo.value = -1
 sleep(5)
