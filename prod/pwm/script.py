@@ -21,7 +21,29 @@ GPIO.setup(ledpin,GPIO.OUT)
 pi_pwm = GPIO.PWM(ledpin, 50)
 pi_pwm.start(0)				      
 
-for speed in range(0, 12.5, 0.5):
-    pi_pwm.ChangeDutyCycle(speed)
-    time.sleep(3)
+try:
+  while True:
+    pi_pwm.ChangeDutyCycle(5)
+    time.sleep(0.5)
+    pi_pwm.ChangeDutyCycle(7.5)
+    time.sleep(0.5)
+    pi_pwm.ChangeDutyCycle(10)
+    time.sleep(0.5)
+    pi_pwm.ChangeDutyCycle(12.5)
+    time.sleep(0.5)
+    pi_pwm.ChangeDutyCycle(10)
+    time.sleep(0.5)
+    pi_pwm.ChangeDutyCycle(7.5)
+    time.sleep(0.5)
+    pi_pwm.ChangeDutyCycle(5)
+    time.sleep(0.5)
+    pi_pwm.ChangeDutyCycle(2.5)
+    time.sleep(0.5)
+except KeyboardInterrupt:
+  pi_pwm.stop()
+  GPIO.cleanup()
+
+# for speed in range(0, 12.5, 0.5):
+#     pi_pwm.ChangeDutyCycle(speed)
+#     time.sleep(3)
         
