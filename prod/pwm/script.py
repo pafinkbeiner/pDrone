@@ -11,6 +11,7 @@ pwm_pins = {
     "hr": 32
 }
 
+
 ledpin = pwm_pins["vr"]				    
 GPIO.setwarnings(False)			        
 GPIO.setmode(GPIO.BOARD)		        
@@ -21,29 +22,19 @@ GPIO.setup(ledpin,GPIO.OUT)
 pi_pwm = GPIO.PWM(ledpin, 50)
 pi_pwm.start(0)				      
 
-try:
-  while True:
-    pi_pwm.ChangeDutyCycle(5)
-    time.sleep(0.5)
-    pi_pwm.ChangeDutyCycle(7.5)
-    time.sleep(0.5)
-    pi_pwm.ChangeDutyCycle(10)
-    time.sleep(0.5)
-    pi_pwm.ChangeDutyCycle(12.5)
-    time.sleep(0.5)
-    pi_pwm.ChangeDutyCycle(10)
-    time.sleep(0.5)
-    pi_pwm.ChangeDutyCycle(7.5)
-    time.sleep(0.5)
-    pi_pwm.ChangeDutyCycle(5)
-    time.sleep(0.5)
-    pi_pwm.ChangeDutyCycle(2.5)
-    time.sleep(0.5)
-except KeyboardInterrupt:
-  pi_pwm.stop()
-  GPIO.cleanup()
+def set_motor_speed(speed):
+    # Begrenze den Wertebereich auf 0-100
+    speed = max(0, min(abs(speed), 100))
+    # Setze die PWM-Duty-Cycle basierend auf der Geschwindigkeit
+    pi_pwm.ChangeDutyCycle(speed)
 
-# for speed in range(0, 12.5, 0.5):
-#     pi_pwm.ChangeDutyCycle(speed)
-#     time.sleep(3)
-        
+
+set_motor_speed(50)
+time.sleep(2)
+
+# Motor anhalten
+set_motor_speed(0)
+
+# Aufräumen und GPIO-Pins freigeben
+pi_pwm.stop()
+GPIO.cleanup()
