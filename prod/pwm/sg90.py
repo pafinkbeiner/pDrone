@@ -14,13 +14,13 @@ for duty in range(0,101,1):
     pi_pwm.ChangeDutyCycle(duty) 
     time.sleep(0.01)
 
-time.sleep(0.5)
+time.sleep(1)
 
 for duty in range(100,-1,-1):
     pi_pwm.ChangeDutyCycle(duty)
     time.sleep(0.01)
 
-time.sleep(0.5)
+time.sleep(1)
 
 pi_pwm.stop()
 GPIO.cleanup()
